@@ -1,11 +1,11 @@
 
 <style>
   *{box-sizing:border-box}
-  .wrap{max-width:640px;margin:0 auto;padding:1rem}
+  .wrap{max-width:840px;margin:0 auto;padding:1rem}
   .main-heading{font-size:20px;font-weight:500;color:var(--color-text-primary);margin:0 0 1.25rem;text-align:center}
   .section-label{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem}
-  .tab-bar{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;justify-content:center}
-  .tab{font-size:14px;padding:7px 16px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+  .tab-bar{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;padding:4px}
+  .tab{font-size:14px;padding:7px 16px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s;white-space:nowrap}
   .tab.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
   .tab:hover:not(.active){background:var(--color-background-secondary);color:var(--color-text-primary)}
   .panel{display:none}.panel.active{display:block}
@@ -33,6 +33,9 @@
   .assoc-dot{width:28px;height:28px;border-radius:6px;flex-shrink:0}
   .assoc-name{font-size:14px;font-weight:500}
   .assoc-mood{font-size:13px;color:var(--color-text-secondary);margin-left:8px}
+  /* Dark mode: only set page background to black and text to white */
+  html.dark-mode{background:#000;color:#fff}
+  html.dark-mode *{color:#fff !important}
 </style>
 
 <div class="wrap">
@@ -46,6 +49,9 @@
     <option value="fr">FR</option>
     <option value="de">DE</option>
   </select>
+  <label style="margin-left:8px;display:flex;align-items:center;gap:6px">
+    <input type="checkbox" id="dark-toggle" onchange="setDarkMode(this.checked)"> Dark
+  </label>
 </div>
 
 <div class="tab-bar" id="tab-bar"></div>
@@ -156,19 +162,19 @@ const LANGS={
   en:{
     heading:"Interactive color theory explainer",
     langLabel:"Language",
-    tabs:["Color wheel","Harmonies","Temperature","Value & saturation","Mixing"],
+    tabs:["Color wheel","Mixing","Temperature","Value & saturation","Harmonies"],
     wheelTitle:"The color wheel",
     wheelDefault:"Click any segment to learn about that hue. The wheel arranges colors in their natural spectrum order \u2014 red, orange, yellow, green, blue, violet \u2014 and back around.",
     wheelClick:"click\na hue",
     hues:[
       {name:"Red",desc:"The most emotionally intense color. Signals danger, passion, urgency, and energy. Advances visually \u2014 red objects appear closer than they are."},
       {name:"Red-orange",desc:"A bridge between red\u2019s urgency and orange\u2019s warmth. Used in sunsets, autumn, and appetizing food imagery."},
-      {name:"Orange",desc:"Energetic and warm without red\u2019s aggression. Associated with creativity, enthusiasm, and harvests."},
-      {name:"Yellow-orange",desc:"Optimistic and golden. Found in autumn light and warm candlelight. Often evokes nostalgia."},
       {name:"Yellow",desc:"The most luminous color to the human eye. Suggests sunshine, optimism, and caution."},
       {name:"Yellow-green",desc:"Fresh and slightly acidic. Common in spring growth. Can feel slightly unnatural in large amounts."},
       {name:"Green",desc:"Nature, balance, and calm. The eye requires no adjustment to focus green light \u2014 it\u2019s inherently restful."},
       {name:"Blue-green",desc:"Fresh and watery. Evokes oceans, health, and clarity. A cooler green that feels more trustworthy."},
+      {name:"Cyan",desc:"Bright, aquatic, and clear. Suggests clarity, cleanliness, and modernity."},
+      {name:"Teal",desc:"A deeper cyan with greenish tones; calm and sophisticated."},
       {name:"Blue",desc:"The most universally favored color. Signals trust, depth, and calm. Recedes visually \u2014 blue objects appear farther away."},
       {name:"Blue-violet",desc:"Mysterious and deep. Associated with twilight, dreams, and digital depth."},
       {name:"Violet",desc:"Royal and rare in nature. Historically associated with wealth and spirituality. Suggests luxury."},
@@ -209,19 +215,19 @@ const LANGS={
   fr:{
     heading:"Th\u00e9orie des couleurs \u2014 explorateur interactif",
     langLabel:"Langue",
-    tabs:["Cercle chromatique","Harmonies","Temp\u00e9rature","Valeur & saturation","M\u00e9lange"],
+    tabs:["Cercle chromatique","M\u00e9lange","Temp\u00e9rature","Valeur & saturation","Harmonies"],
     wheelTitle:"Le cercle chromatique",
     wheelDefault:"Cliquez sur un segment pour en apprendre davantage sur cette teinte. Le cercle organise les couleurs dans l\u2019ordre naturel du spectre \u2014 rouge, orange, jaune, vert, bleu, violet \u2014 et revient au d\u00e9but.",
     wheelClick:"cliquez\nune teinte",
     hues:[
       {name:"Rouge",desc:"La couleur la plus intense \u00e9motionnellement. Elle signale le danger, la passion, l\u2019urgence et l\u2019\u00e9nergie. Elle avance visuellement \u2014 les objets rouges semblent plus proches qu\u2019ils ne le sont."},
       {name:"Rouge-orange",desc:"Un pont entre l\u2019urgence du rouge et la chaleur de l\u2019orange. Utilis\u00e9 pour les couchers de soleil, l\u2019automne et les images alimentaires app\u00e9tissantes."},
-      {name:"Orange",desc:"\u00c9nergique et chaud, sans l\u2019agressivit\u00e9 du rouge. Associ\u00e9 \u00e0 la cr\u00e9ativit\u00e9, \u00e0 l\u2019enthousiasme et aux r\u00e9coltes."},
-      {name:"Jaune-orange",desc:"Optimiste et dor\u00e9. Pr\u00e9sent dans la lumi\u00e8re d\u2019automne et la lueur des bougies. \u00c9voque souvent la nostalgie."},
       {name:"Jaune",desc:"La couleur la plus lumineuse pour l\u2019\u0153il humain. \u00c9voque le soleil, l\u2019optimisme et la prudence."},
       {name:"Jaune-vert",desc:"Fra\u00eeche et l\u00e9g\u00e8rement acide. Courante dans la v\u00e9g\u00e9tation printani\u00e8re. Peut para\u00eetre l\u00e9g\u00e8rement artificielle en grande quantit\u00e9."},
       {name:"Vert",desc:"Nature, \u00e9quilibre et calme. L\u2019\u0153il n\u2019a besoin d\u2019aucun ajustement pour mettre au point la lumi\u00e8re verte \u2014 elle est intrins\u00e8quement reposante."},
       {name:"Bleu-vert",desc:"Fra\u00eeche et aquatique. \u00c9voque les oc\u00e9ans, la sant\u00e9 et la clart\u00e9. Un vert plus froid qui inspire davantage confiance."},
+      {name:"Cyan",color:"#00FFFF",mood:"Clair et aquatique" ,desc:"Brillant, aquatique et clair. Sugg\u00e8re la clart\u00e9, la propret\u00e9 et la modernit\u00e9."},
+      {name:"Sarcelle",desc:"Un cyan plus profond avec des tons verd\u00e2tres ; calme et sophistiqu\u00e9."},
       {name:"Bleu",desc:"La couleur universellement la plus appr\u00e9ci\u00e9e. Signale la confiance, la profondeur et le calme. Elle recule visuellement \u2014 les objets bleus semblent plus \u00e9loign\u00e9s."},
       {name:"Bleu-violet",desc:"Myst\u00e9rieux et profond. Associ\u00e9 au cr\u00e9puscule, aux r\u00eaves et \u00e0 la profondeur num\u00e9rique."},
       {name:"Violet",desc:"Royal et rare dans la nature. Historiquement associ\u00e9 \u00e0 la richesse et \u00e0 la spiritualit\u00e9. Sugg\u00e8re le luxe."},
@@ -262,19 +268,19 @@ const LANGS={
   de:{
     heading:"Farbtheorie \u2014 interaktiver Erkl\u00e4rer",
     langLabel:"Sprache",
-    tabs:["Farbkreis","Harmonien","Temperatur","Helligkeit & S\u00e4ttigung","Mischung"],
+    tabs:["Farbkreis","Mischung","Temperatur","Helligkeit & S\u00e4ttigung","Harmonien"],
     wheelTitle:"Der Farbkreis",
     wheelDefault:"Klicken Sie auf ein Segment, um mehr \u00fcber diesen Farbton zu erfahren. Der Kreis ordnet Farben in ihrer nat\u00fcrlichen Spektralreihenfolge an \u2014 Rot, Orange, Gelb, Gr\u00fcn, Blau, Violett \u2014 und wieder zur\u00fcck.",
     wheelClick:"Farbton\nw\u00e4hlen",
     hues:[
       {name:"Rot",desc:"Die emotional intensivste Farbe. Signalisiert Gefahr, Leidenschaft, Dringlichkeit und Energie. R\u00fcckt visuell n\u00e4her \u2014 rote Objekte wirken n\u00e4her als sie sind."},
       {name:"Rotorange",desc:"Eine Br\u00fccke zwischen der Dringlichkeit von Rot und der W\u00e4rme von Orange. Wird bei Sonnenunterg\u00e4ngen, Herbst und Lebensmittelfotos eingesetzt."},
-      {name:"Orange",desc:"Energiegeladen und warm, ohne die Aggressivit\u00e4t von Rot. Verkn\u00fcpft mit Kreativit\u00e4t, Begeisterung und Ernte."},
-      {name:"Gelborange",desc:"Optimistisch und golden. Findet sich im Herbstlicht und bei Kerzenschein. Weckt oft Nostalgie."},
       {name:"Gelb",desc:"Die leuchtendste Farbe f\u00fcr das menschliche Auge. Steht f\u00fcr Sonnenschein, Optimismus und Vorsicht."},
       {name:"Gelbgr\u00fcn",desc:"Frisch und leicht s\u00e4uerlich. H\u00e4ufig im Fr\u00fchlingslaub. Kann in gro\u00dfen Mengen etwas k\u00fcnstlich wirken."},
       {name:"Gr\u00fcn",desc:"Natur, Balance und Ruhe. Das Auge ben\u00f6tigt keine Anpassung, um gr\u00fcnes Licht zu fokussieren \u2014 es ist von Natur aus erholsam."},
       {name:"Blaugr\u00fcn",desc:"Frisch und w\u00e4ssrig. Erinnert an Ozeane, Gesundheit und Klarheit. Ein k\u00fchleres Gr\u00fcn, das vertrauensw\u00fcrdiger wirkt."},
+      {name:"Cyan",desc:"Hell, aquatisch und klar. Deutet auf Sauberkeit, Klarheit und Modernit\u00e4t hin."},
+      {name:"T\u00fcrkis",desc:"Ein tieferes Cyan mit gr\u00fcnlichen T\u00f6nen; ruhig und anspruchsvoll."},
       {name:"Blau",desc:"Die weltweit beliebteste Farbe. Signalisiert Vertrauen, Tiefe und Ruhe. Wirkt visuell zur\u00fcckweichend \u2014 blaue Objekte erscheinen weiter entfernt."},
       {name:"Blauviolett",desc:"Mysteri\u00f6s und tief. Assoziiert mit D\u00e4mmerung, Tr\u00e4umen und digitaler Tiefe."},
       {name:"Violett",desc:"K\u00f6niglich und selten in der Natur. Historisch mit Reichtum und Spiritualit\u00e4t verbunden. Steht f\u00fcr Luxus."},
@@ -314,7 +320,7 @@ const LANGS={
   }
 };
 
-const panelIds=['wheel','harmony','temperature','value','mixing'];
+const panelIds=['wheel','mixing','temperature','value','harmony'];
 let currentLang='en';
 let currentPanel='wheel';
 let wheelClicked=false;
@@ -488,6 +494,22 @@ function setLang(lang){
   currentLang=lang;
   applyLang();
 }
+
+function setDarkMode(on){
+  if(on) document.documentElement.classList.add('dark-mode');
+  else document.documentElement.classList.remove('dark-mode');
+  try{localStorage.setItem('darkMode', on? '1' : '0')}catch(e){}
+}
+
+// initialize dark mode state from localStorage
+try{
+  const dm = localStorage.getItem('darkMode');
+  if(dm === '1'){
+    const cb = document.getElementById('dark-toggle');
+    if(cb) cb.checked = true;
+    setDarkMode(true);
+  }
+}catch(e){}
 
 drawWheel();
 applyLang();
