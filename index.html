@@ -162,7 +162,7 @@ const LANGS={
   en:{
     heading:"Interactive color theory explainer",
     langLabel:"Language",
-    tabs:["Color wheel","Harmonies","Temperature","Value & saturation","Mixing"],
+    tabs:["Color wheel","Mixing","Temperature","Value & saturation","Harmonies"],
     wheelTitle:"The color wheel",
     wheelDefault:"Click any segment to learn about that hue. The wheel arranges colors in their natural spectrum order \u2014 red, orange, yellow, green, blue, violet \u2014 and back around.",
     wheelClick:"click\na hue",
@@ -215,7 +215,7 @@ const LANGS={
   fr:{
     heading:"Th\u00e9orie des couleurs \u2014 explorateur interactif",
     langLabel:"Langue",
-    tabs:["Cercle chromatique","Harmonies","Temp\u00e9rature","Valeur & saturation","M\u00e9lange"],
+    tabs:["Cercle chromatique","M\u00e9lange","Temp\u00e9rature","Valeur & saturation","Harmonies"],
     wheelTitle:"Le cercle chromatique",
     wheelDefault:"Cliquez sur un segment pour en apprendre davantage sur cette teinte. Le cercle organise les couleurs dans l\u2019ordre naturel du spectre \u2014 rouge, orange, jaune, vert, bleu, violet \u2014 et revient au d\u00e9but.",
     wheelClick:"cliquez\nune teinte",
@@ -268,7 +268,7 @@ const LANGS={
   de:{
     heading:"Farbtheorie \u2014 interaktiver Erkl\u00e4rer",
     langLabel:"Sprache",
-    tabs:["Farbkreis","Harmonien","Temperatur","Helligkeit & S\u00e4ttigung","Mischung"],
+    tabs:["Farbkreis","Mischung","Temperatur","Helligkeit & S\u00e4ttigung","Harmonien"],
     wheelTitle:"Der Farbkreis",
     wheelDefault:"Klicken Sie auf ein Segment, um mehr \u00fcber diesen Farbton zu erfahren. Der Kreis ordnet Farben in ihrer nat\u00fcrlichen Spektralreihenfolge an \u2014 Rot, Orange, Gelb, Gr\u00fcn, Blau, Violett \u2014 und wieder zur\u00fcck.",
     wheelClick:"Farbton\nw\u00e4hlen",
@@ -320,7 +320,7 @@ const LANGS={
   }
 };
 
-const panelIds=['wheel','harmony','temperature','value','mixing'];
+const panelIds=['wheel','mixing','temperature','value','harmony'];
 let currentLang='en';
 let currentPanel='wheel';
 let wheelClicked=false;
