@@ -33,6 +33,9 @@
   .assoc-dot{width:28px;height:28px;border-radius:6px;flex-shrink:0}
   .assoc-name{font-size:14px;font-weight:500}
   .assoc-mood{font-size:13px;color:var(--color-text-secondary);margin-left:8px}
+  /* Dark mode: only set page background to black and text to white */
+  html.dark-mode{background:#000;color:#fff}
+  html.dark-mode *{color:#fff !important}
 </style>
 
 <div class="wrap">
@@ -46,6 +49,9 @@
     <option value="fr">FR</option>
     <option value="de">DE</option>
   </select>
+  <label style="margin-left:8px;display:flex;align-items:center;gap:6px">
+    <input type="checkbox" id="dark-toggle" onchange="setDarkMode(this.checked)"> Dark
+  </label>
 </div>
 
 <div class="tab-bar" id="tab-bar"></div>
@@ -488,6 +494,22 @@ function setLang(lang){
   currentLang=lang;
   applyLang();
 }
+
+function setDarkMode(on){
+  if(on) document.documentElement.classList.add('dark-mode');
+  else document.documentElement.classList.remove('dark-mode');
+  try{localStorage.setItem('darkMode', on? '1' : '0')}catch(e){}
+}
+
+// initialize dark mode state from localStorage
+try{
+  const dm = localStorage.getItem('darkMode');
+  if(dm === '1'){
+    const cb = document.getElementById('dark-toggle');
+    if(cb) cb.checked = true;
+    setDarkMode(true);
+  }
+}catch(e){}
 
 drawWheel();
 applyLang();
