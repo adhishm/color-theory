@@ -1,0 +1,497 @@
+
+<style>
+  *{box-sizing:border-box}
+  .wrap{max-width:640px;margin:0 auto;padding:1rem}
+  .main-heading{font-size:20px;font-weight:500;color:var(--color-text-primary);margin:0 0 1.25rem;text-align:center}
+  .section-label{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem}
+  .tab-bar{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;justify-content:center}
+  .tab{font-size:14px;padding:7px 16px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+  .tab.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+  .tab:hover:not(.active){background:var(--color-background-secondary);color:var(--color-text-primary)}
+  .panel{display:none}.panel.active{display:block}
+  .info-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-top:1rem;font-size:14px;line-height:1.65;color:var(--color-text-primary);border:.5px solid var(--color-border-tertiary);min-height:60px}
+  .harmony-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .harmony-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:.5px solid var(--color-border-tertiary);padding:.75rem 1rem;cursor:pointer;transition:border-color .15s}
+  .harmony-card:hover,.harmony-card.active{border-color:var(--color-border-primary)}
+  .harmony-card h4{font-size:14px;font-weight:500;margin:0 0 5px}
+  .harmony-card p{font-size:13px;color:var(--color-text-secondary);margin:0 0 8px;line-height:1.5}
+  .harmony-swatches{display:flex;gap:5px}
+  .hswatch{flex:1;height:28px;border-radius:4px}
+  .temp-split{display:flex;gap:1px;border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+  .temp-half{flex:1;padding:1rem;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .temp-half p{font-size:13px;margin:0;line-height:1.5;text-align:center}
+  .temp-half h3{font-size:15px;font-weight:500;margin:0}
+  .mix-dot{width:48px;height:48px;border-radius:50%;border:.5px solid var(--color-border-tertiary)}
+  .mix-label{font-size:13px;color:var(--color-text-secondary);text-align:center;margin-top:4px}
+  .lang-bar{display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;gap:8px}
+  .lang-bar label{font-size:13px;color:var(--color-text-secondary)}
+  .lang-bar select{font-size:14px;padding:5px 10px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer}
+  .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+  .slider-row label{font-size:14px;color:var(--color-text-secondary);min-width:64px}
+  .slider-row span{font-size:14px;font-weight:500;min-width:38px;text-align:right}
+  .assoc-row{display:flex;align-items:center;gap:10px}
+  .assoc-dot{width:28px;height:28px;border-radius:6px;flex-shrink:0}
+  .assoc-name{font-size:14px;font-weight:500}
+  .assoc-mood{font-size:13px;color:var(--color-text-secondary);margin-left:8px}
+</style>
+
+<div class="wrap">
+
+<h2 class="main-heading" id="main-heading"></h2>
+
+<div class="lang-bar">
+  <label id="lang-label">Language</label>
+  <select id="lang-select" onchange="setLang(this.value)">
+    <option value="en">EN</option>
+    <option value="fr">FR</option>
+    <option value="de">DE</option>
+  </select>
+</div>
+
+<div class="tab-bar" id="tab-bar"></div>
+
+<div class="panel active" id="panel-wheel">
+  <div class="section-label" id="lbl-wheel-title"></div>
+  <div style="position:relative;width:280px;height:280px;margin:0 auto 1rem">
+    <svg id="wheel-svg" width="280" height="280" viewBox="0 0 280 280"></svg>
+    <div id="wheel-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;border:.5px solid var(--color-border-tertiary);background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--color-text-secondary);text-align:center;cursor:pointer;transition:background .2s;line-height:1.3"></div>
+  </div>
+  <div class="info-card" id="wheel-info"></div>
+</div>
+
+<div class="panel" id="panel-harmony">
+  <div class="section-label" id="lbl-harmony-title"></div>
+  <div class="harmony-grid" id="harmony-grid"></div>
+  <div class="info-card" id="harmony-info"></div>
+</div>
+
+<div class="panel" id="panel-temperature">
+  <div class="section-label" id="lbl-temp-title"></div>
+  <div class="temp-split">
+    <div class="temp-half" style="background:linear-gradient(135deg,#E85D24,#F2A623,#D4537E)">
+      <h3 id="temp-warm-h" style="color:#4A1B0C"></h3>
+      <p id="temp-warm-p" style="color:#711203"></p>
+    </div>
+    <div class="temp-half" style="background:linear-gradient(135deg,#185FA5,#1D9E75,#534AB7)">
+      <h3 id="temp-cool-h" style="color:#E6F1FB"></h3>
+      <p id="temp-cool-p" style="color:#B5D4F4"></p>
+    </div>
+  </div>
+  <div class="section-label" id="lbl-temp-assoc"></div>
+  <div id="temp-associations" style="display:flex;flex-direction:column;gap:8px"></div>
+  <div class="info-card" id="temp-note"></div>
+</div>
+
+<div class="panel" id="panel-value">
+  <div class="section-label" id="lbl-value-title"></div>
+  <div class="slider-row">
+    <label id="lbl-hue"></label>
+    <input type="range" min="0" max="360" value="220" id="val-hue" step="1" oninput="updateValue()">
+    <span id="val-hue-out">220\u00b0</span>
+  </div>
+  <div id="value-bars" style="display:flex;align-items:flex-end;gap:6px;justify-content:center;height:140px;margin:.5rem 0"></div>
+  <div style="display:flex;justify-content:space-between;padding:0 4px;margin-bottom:1.5rem">
+    <span style="font-size:12px;color:var(--color-text-tertiary)" id="lbl-shade"></span>
+    <span style="font-size:12px;color:var(--color-text-tertiary)" id="lbl-tint"></span>
+  </div>
+  <div class="section-label" id="lbl-sat-title"></div>
+  <div class="slider-row">
+    <label id="lbl-hue2"></label>
+    <input type="range" min="0" max="360" value="220" id="sat-hue" step="1" oninput="updateSat()">
+    <span id="sat-hue-out">220\u00b0</span>
+  </div>
+  <div id="sat-bars" style="display:flex;align-items:flex-end;gap:6px;justify-content:center;height:100px;margin:.5rem 0"></div>
+  <div style="display:flex;justify-content:space-between;padding:0 4px">
+    <span style="font-size:12px;color:var(--color-text-tertiary)" id="lbl-sat-low"></span>
+    <span style="font-size:12px;color:var(--color-text-tertiary)" id="lbl-sat-high"></span>
+  </div>
+</div>
+
+<div class="panel" id="panel-mixing">
+  <div class="section-label" id="lbl-mix-title"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem">
+    <div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:6px" id="lbl-color-a"></div>
+      <input type="range" min="0" max="360" value="0" id="mix-a" step="1" oninput="updateMix()" style="width:100%">
+    </div>
+    <div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:6px" id="lbl-color-b"></div>
+      <input type="range" min="0" max="360" value="120" id="mix-b" step="1" oninput="updateMix()" style="width:100%">
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center">
+    <div><div class="mix-dot" id="mix-dot-a"></div><div class="mix-label" id="mix-name-a"></div></div>
+    <div style="font-size:22px;color:var(--color-text-tertiary)">+</div>
+    <div><div class="mix-dot" id="mix-dot-b"></div><div class="mix-label" id="mix-name-b"></div></div>
+    <div style="font-size:22px;color:var(--color-text-tertiary)">=</div>
+    <div><div class="mix-dot" id="mix-dot-out"></div><div class="mix-label" id="mix-name-out"></div></div>
+  </div>
+  <div class="section-label" style="margin-top:1.5rem" id="lbl-primary-title"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="harmony-card">
+      <h4 id="ryb-title"></h4>
+      <p id="ryb-desc"></p>
+      <div class="harmony-swatches">
+        <div class="hswatch" style="background:#D42B2B"></div>
+        <div class="hswatch" style="background:#F2C12E"></div>
+        <div class="hswatch" style="background:#2B4BD4"></div>
+      </div>
+    </div>
+    <div class="harmony-card">
+      <h4 id="rgb-title"></h4>
+      <p id="rgb-desc"></p>
+      <div class="harmony-swatches">
+        <div class="hswatch" style="background:#E22222"></div>
+        <div class="hswatch" style="background:#22E222"></div>
+        <div class="hswatch" style="background:#2222E2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const LANGS={
+  en:{
+    heading:"Interactive color theory explainer",
+    langLabel:"Language",
+    tabs:["Color wheel","Harmonies","Temperature","Value & saturation","Mixing"],
+    wheelTitle:"The color wheel",
+    wheelDefault:"Click any segment to learn about that hue. The wheel arranges colors in their natural spectrum order \u2014 red, orange, yellow, green, blue, violet \u2014 and back around.",
+    wheelClick:"click\na hue",
+    hues:[
+      {name:"Red",desc:"The most emotionally intense color. Signals danger, passion, urgency, and energy. Advances visually \u2014 red objects appear closer than they are."},
+      {name:"Red-orange",desc:"A bridge between red\u2019s urgency and orange\u2019s warmth. Used in sunsets, autumn, and appetizing food imagery."},
+      {name:"Orange",desc:"Energetic and warm without red\u2019s aggression. Associated with creativity, enthusiasm, and harvests."},
+      {name:"Yellow-orange",desc:"Optimistic and golden. Found in autumn light and warm candlelight. Often evokes nostalgia."},
+      {name:"Yellow",desc:"The most luminous color to the human eye. Suggests sunshine, optimism, and caution."},
+      {name:"Yellow-green",desc:"Fresh and slightly acidic. Common in spring growth. Can feel slightly unnatural in large amounts."},
+      {name:"Green",desc:"Nature, balance, and calm. The eye requires no adjustment to focus green light \u2014 it\u2019s inherently restful."},
+      {name:"Blue-green",desc:"Fresh and watery. Evokes oceans, health, and clarity. A cooler green that feels more trustworthy."},
+      {name:"Blue",desc:"The most universally favored color. Signals trust, depth, and calm. Recedes visually \u2014 blue objects appear farther away."},
+      {name:"Blue-violet",desc:"Mysterious and deep. Associated with twilight, dreams, and digital depth."},
+      {name:"Violet",desc:"Royal and rare in nature. Historically associated with wealth and spirituality. Suggests luxury."},
+      {name:"Red-violet",desc:"Romantic and energetic. Bridges the red and violet families. Used in berry tones and dramatic moods."},
+    ],
+    harmonyTitle:"Color harmonies",
+    harmonyDefault:"Select a harmony above to see its color relationships and when to use it.",
+    harmonies:[
+      {name:"Complementary",desc:"Opposite hues \u2014 maximum contrast. Bold and vibrant.",use:"Accents, call-to-action buttons, sports branding."},
+      {name:"Analogous",desc:"Adjacent hues \u2014 naturally cohesive and harmonious.",use:"Landscape photos, nature-themed design, calm UIs."},
+      {name:"Triadic",desc:"Three evenly spaced hues \u2014 vibrant yet balanced.",use:"Children\u2019s brands, playful illustration, bold posters."},
+      {name:"Split-compl.",desc:"Base + two hues flanking its complement. High contrast, softer.",use:"A safe, visually rich alternative to complementary."},
+      {name:"Tetradic",desc:"Four evenly spaced hues \u2014 rich and complex.",use:"Product photography, complex illustrations."},
+      {name:"Monochromatic",desc:"One hue at varying lightness and saturation. Elegant.",use:"Minimal design, brand identity, photography editing."},
+    ],
+    tempTitle:"Color temperature",
+    tempWarmH:"Warm",tempWarmP:"Reds, oranges, yellows. Energy, urgency, warmth, passion.",
+    tempCoolH:"Cool",tempCoolP:"Blues, greens, violets. Calm, trust, depth, distance.",
+    tempAssocTitle:"Psychological associations",
+    tempNote:"Temperature is relative \u2014 orange feels warm next to blue, but cooler next to red. Context always shifts perception.",
+    assoc:[
+      {label:"Red",color:"#D42B2B",mood:"Urgency, appetite, passion"},
+      {label:"Orange",color:"#E87020",mood:"Energy, creativity, warmth"},
+      {label:"Yellow",color:"#E8C020",mood:"Optimism, attention, caution"},
+      {label:"Green",color:"#2E8B57",mood:"Nature, growth, balance"},
+      {label:"Blue",color:"#2855C0",mood:"Trust, calm, depth"},
+      {label:"Violet",color:"#7040C0",mood:"Luxury, mystery, creativity"},
+    ],
+    valueTitle:"Value (lightness)",hue:"Hue",
+    shade:"\u2190 darker (shade)",tint:"lighter (tint) \u2192",
+    satTitle:"Saturation",satLow:"0% (gray)",satHigh:"100% (vivid)",
+    mixTitle:"Subtractive color mixing (pigment)",
+    colorA:"Color A",colorB:"Color B",mixOut:"mix",
+    primaryTitle:"Primary colors \u2014 two models",
+    rybTitle:"RYB (paint)",rybDesc:"Traditional artist\u2019s model. Red, yellow, blue as primaries.",
+    rgbTitle:"RGB (light)",rgbDesc:"Additive model for screens. Red, green, blue as primaries.",
+  },
+  fr:{
+    heading:"Th\u00e9orie des couleurs \u2014 explorateur interactif",
+    langLabel:"Langue",
+    tabs:["Cercle chromatique","Harmonies","Temp\u00e9rature","Valeur & saturation","M\u00e9lange"],
+    wheelTitle:"Le cercle chromatique",
+    wheelDefault:"Cliquez sur un segment pour en apprendre davantage sur cette teinte. Le cercle organise les couleurs dans l\u2019ordre naturel du spectre \u2014 rouge, orange, jaune, vert, bleu, violet \u2014 et revient au d\u00e9but.",
+    wheelClick:"cliquez\nune teinte",
+    hues:[
+      {name:"Rouge",desc:"La couleur la plus intense \u00e9motionnellement. Elle signale le danger, la passion, l\u2019urgence et l\u2019\u00e9nergie. Elle avance visuellement \u2014 les objets rouges semblent plus proches qu\u2019ils ne le sont."},
+      {name:"Rouge-orange",desc:"Un pont entre l\u2019urgence du rouge et la chaleur de l\u2019orange. Utilis\u00e9 pour les couchers de soleil, l\u2019automne et les images alimentaires app\u00e9tissantes."},
+      {name:"Orange",desc:"\u00c9nergique et chaud, sans l\u2019agressivit\u00e9 du rouge. Associ\u00e9 \u00e0 la cr\u00e9ativit\u00e9, \u00e0 l\u2019enthousiasme et aux r\u00e9coltes."},
+      {name:"Jaune-orange",desc:"Optimiste et dor\u00e9. Pr\u00e9sent dans la lumi\u00e8re d\u2019automne et la lueur des bougies. \u00c9voque souvent la nostalgie."},
+      {name:"Jaune",desc:"La couleur la plus lumineuse pour l\u2019\u0153il humain. \u00c9voque le soleil, l\u2019optimisme et la prudence."},
+      {name:"Jaune-vert",desc:"Fra\u00eeche et l\u00e9g\u00e8rement acide. Courante dans la v\u00e9g\u00e9tation printani\u00e8re. Peut para\u00eetre l\u00e9g\u00e8rement artificielle en grande quantit\u00e9."},
+      {name:"Vert",desc:"Nature, \u00e9quilibre et calme. L\u2019\u0153il n\u2019a besoin d\u2019aucun ajustement pour mettre au point la lumi\u00e8re verte \u2014 elle est intrins\u00e8quement reposante."},
+      {name:"Bleu-vert",desc:"Fra\u00eeche et aquatique. \u00c9voque les oc\u00e9ans, la sant\u00e9 et la clart\u00e9. Un vert plus froid qui inspire davantage confiance."},
+      {name:"Bleu",desc:"La couleur universellement la plus appr\u00e9ci\u00e9e. Signale la confiance, la profondeur et le calme. Elle recule visuellement \u2014 les objets bleus semblent plus \u00e9loign\u00e9s."},
+      {name:"Bleu-violet",desc:"Myst\u00e9rieux et profond. Associ\u00e9 au cr\u00e9puscule, aux r\u00eaves et \u00e0 la profondeur num\u00e9rique."},
+      {name:"Violet",desc:"Royal et rare dans la nature. Historiquement associ\u00e9 \u00e0 la richesse et \u00e0 la spiritualit\u00e9. Sugg\u00e8re le luxe."},
+      {name:"Rouge-violet",desc:"Romantique et \u00e9nergique. Relie les familles du rouge et du violet. Utilis\u00e9 dans les tons de baies et les ambiances dramatiques."},
+    ],
+    harmonyTitle:"Harmonies chromatiques",
+    harmonyDefault:"S\u00e9lectionnez une harmonie ci-dessus pour voir ses relations de couleurs et quand l\u2019utiliser.",
+    harmonies:[
+      {name:"Compl\u00e9mentaires",desc:"Teintes oppos\u00e9es \u2014 contraste maximal. Audacieux et vibrant.",use:"Accents, boutons d\u2019appel \u00e0 l\u2019action, image sportive."},
+      {name:"Analogues",desc:"Teintes adjacentes \u2014 naturellement coh\u00e9sives et harmonieuses.",use:"Photos de paysage, design nature, interfaces calmes."},
+      {name:"Triadiques",desc:"Trois teintes \u00e9quidistantes \u2014 vives mais \u00e9quilibr\u00e9es.",use:"Marques jeunesse, illustration ludique, affiches audacieuses."},
+      {name:"Comp. divis\u00e9e",desc:"Base + deux teintes flanquant son compl\u00e9ment. Contraste \u00e9lev\u00e9, plus doux.",use:"Alternative s\u00fbre et riche aux compl\u00e9mentaires."},
+      {name:"T\u00e9tradique",desc:"Quatre teintes \u00e9quidistantes \u2014 riche et complexe.",use:"Photographie de produit, illustrations complexes."},
+      {name:"Monochromatique",desc:"Une teinte \u00e0 luminosit\u00e9 et saturation vari\u00e9es. \u00c9l\u00e9gant.",use:"Design minimaliste, identit\u00e9 visuelle, retouche photo."},
+    ],
+    tempTitle:"Temp\u00e9rature des couleurs",
+    tempWarmH:"Chaud",tempWarmP:"Rouges, oranges, jaunes. \u00c9nergie, urgence, chaleur, passion.",
+    tempCoolH:"Froid",tempCoolP:"Bleus, verts, violets. Calme, confiance, profondeur, distance.",
+    tempAssocTitle:"Associations psychologiques",
+    tempNote:"La temp\u00e9rature est relative \u2014 l\u2019orange para\u00eet chaud \u00e0 c\u00f4t\u00e9 du bleu, mais plus froid \u00e0 c\u00f4t\u00e9 du rouge. Le contexte modifie toujours la perception.",
+    assoc:[
+      {label:"Rouge",color:"#D42B2B",mood:"Urgence, app\u00e9tit, passion"},
+      {label:"Orange",color:"#E87020",mood:"\u00c9nergie, cr\u00e9ativit\u00e9, chaleur"},
+      {label:"Jaune",color:"#E8C020",mood:"Optimisme, attention, prudence"},
+      {label:"Vert",color:"#2E8B57",mood:"Nature, croissance, \u00e9quilibre"},
+      {label:"Bleu",color:"#2855C0",mood:"Confiance, calme, profondeur"},
+      {label:"Violet",color:"#7040C0",mood:"Luxe, myst\u00e8re, cr\u00e9ativit\u00e9"},
+    ],
+    valueTitle:"Valeur (luminosit\u00e9)",hue:"Teinte",
+    shade:"\u2190 plus sombre (ombre)",tint:"plus clair (teinte) \u2192",
+    satTitle:"Saturation",satLow:"0% (gris)",satHigh:"100% (vif)",
+    mixTitle:"M\u00e9lange soustractif (pigments)",
+    colorA:"Couleur A",colorB:"Couleur B",mixOut:"m\u00e9lange",
+    primaryTitle:"Couleurs primaires \u2014 deux mod\u00e8les",
+    rybTitle:"RJB (peinture)",rybDesc:"Mod\u00e8le traditionnel de l\u2019artiste. Rouge, jaune, bleu comme primaires.",
+    rgbTitle:"RVB (lumi\u00e8re)",rgbDesc:"Mod\u00e8le additif pour les \u00e9crans. Rouge, vert, bleu comme primaires.",
+  },
+  de:{
+    heading:"Farbtheorie \u2014 interaktiver Erkl\u00e4rer",
+    langLabel:"Sprache",
+    tabs:["Farbkreis","Harmonien","Temperatur","Helligkeit & S\u00e4ttigung","Mischung"],
+    wheelTitle:"Der Farbkreis",
+    wheelDefault:"Klicken Sie auf ein Segment, um mehr \u00fcber diesen Farbton zu erfahren. Der Kreis ordnet Farben in ihrer nat\u00fcrlichen Spektralreihenfolge an \u2014 Rot, Orange, Gelb, Gr\u00fcn, Blau, Violett \u2014 und wieder zur\u00fcck.",
+    wheelClick:"Farbton\nw\u00e4hlen",
+    hues:[
+      {name:"Rot",desc:"Die emotional intensivste Farbe. Signalisiert Gefahr, Leidenschaft, Dringlichkeit und Energie. R\u00fcckt visuell n\u00e4her \u2014 rote Objekte wirken n\u00e4her als sie sind."},
+      {name:"Rotorange",desc:"Eine Br\u00fccke zwischen der Dringlichkeit von Rot und der W\u00e4rme von Orange. Wird bei Sonnenunterg\u00e4ngen, Herbst und Lebensmittelfotos eingesetzt."},
+      {name:"Orange",desc:"Energiegeladen und warm, ohne die Aggressivit\u00e4t von Rot. Verkn\u00fcpft mit Kreativit\u00e4t, Begeisterung und Ernte."},
+      {name:"Gelborange",desc:"Optimistisch und golden. Findet sich im Herbstlicht und bei Kerzenschein. Weckt oft Nostalgie."},
+      {name:"Gelb",desc:"Die leuchtendste Farbe f\u00fcr das menschliche Auge. Steht f\u00fcr Sonnenschein, Optimismus und Vorsicht."},
+      {name:"Gelbgr\u00fcn",desc:"Frisch und leicht s\u00e4uerlich. H\u00e4ufig im Fr\u00fchlingslaub. Kann in gro\u00dfen Mengen etwas k\u00fcnstlich wirken."},
+      {name:"Gr\u00fcn",desc:"Natur, Balance und Ruhe. Das Auge ben\u00f6tigt keine Anpassung, um gr\u00fcnes Licht zu fokussieren \u2014 es ist von Natur aus erholsam."},
+      {name:"Blaugr\u00fcn",desc:"Frisch und w\u00e4ssrig. Erinnert an Ozeane, Gesundheit und Klarheit. Ein k\u00fchleres Gr\u00fcn, das vertrauensw\u00fcrdiger wirkt."},
+      {name:"Blau",desc:"Die weltweit beliebteste Farbe. Signalisiert Vertrauen, Tiefe und Ruhe. Wirkt visuell zur\u00fcckweichend \u2014 blaue Objekte erscheinen weiter entfernt."},
+      {name:"Blauviolett",desc:"Mysteri\u00f6s und tief. Assoziiert mit D\u00e4mmerung, Tr\u00e4umen und digitaler Tiefe."},
+      {name:"Violett",desc:"K\u00f6niglich und selten in der Natur. Historisch mit Reichtum und Spiritualit\u00e4t verbunden. Steht f\u00fcr Luxus."},
+      {name:"Rotviolett",desc:"Romantisch und energiegeladen. Verbindet die Rot- und Violettfamilien. Wird f\u00fcr Beerent\u00f6ne und dramatische Stimmungen verwendet."},
+    ],
+    harmonyTitle:"Farbharmonien",
+    harmonyDefault:"W\u00e4hlen Sie eine Harmonie oben, um ihre Farbbeziehungen und Anwendungsf\u00e4lle zu sehen.",
+    harmonies:[
+      {name:"Komplement\u00e4r",desc:"Gegen\u00fcberliegende T\u00f6ne \u2014 maximaler Kontrast. Kr\u00e4ftig und lebendig.",use:"Akzente, Call-to-Action-Buttons, Sportbranding."},
+      {name:"Analog",desc:"Benachbarte T\u00f6ne \u2014 nat\u00fcrlich koh\u00e4rent und harmonisch.",use:"Landschaftsfotos, naturnahes Design, ruhige UIs."},
+      {name:"Triadisch",desc:"Drei gleichm\u00e4\u00dfig verteilte T\u00f6ne \u2014 lebendig und ausgewogen.",use:"Kinder-Marken, verspielte Illustration, starke Poster."},
+      {name:"Geteiltes Komp.",desc:"Basis + zwei Farbt\u00f6ne, die das Komplement flankieren. Hoher Kontrast, weicher.",use:"Sichere, visuell reiche Alternative zu Komplement\u00e4r."},
+      {name:"Tetradisch",desc:"Vier gleichm\u00e4\u00dfig verteilte T\u00f6ne \u2014 reich und komplex.",use:"Produktfotografie, komplexe Illustrationen."},
+      {name:"Monochromatisch",desc:"Ein Ton in verschiedenen Helligkeiten und S\u00e4ttigungen. Elegant.",use:"Minimalistisches Design, Markenidentit\u00e4t, Fotobearbeitung."},
+    ],
+    tempTitle:"Farbtemperatur",
+    tempWarmH:"Warm",tempWarmP:"Rot, Orange, Gelb. Energie, Dringlichkeit, W\u00e4rme, Leidenschaft.",
+    tempCoolH:"K\u00fchl",tempCoolP:"Blau, Gr\u00fcn, Violett. Ruhe, Vertrauen, Tiefe, Distanz.",
+    tempAssocTitle:"Psychologische Assoziationen",
+    tempNote:"Temperatur ist relativ \u2014 Orange wirkt warm neben Blau, aber k\u00fchler neben Rot. Der Kontext ver\u00e4ndert immer die Wahrnehmung.",
+    assoc:[
+      {label:"Rot",color:"#D42B2B",mood:"Dringlichkeit, Appetit, Leidenschaft"},
+      {label:"Orange",color:"#E87020",mood:"Energie, Kreativit\u00e4t, W\u00e4rme"},
+      {label:"Gelb",color:"#E8C020",mood:"Optimismus, Aufmerksamkeit, Vorsicht"},
+      {label:"Gr\u00fcn",color:"#2E8B57",mood:"Natur, Wachstum, Balance"},
+      {label:"Blau",color:"#2855C0",mood:"Vertrauen, Ruhe, Tiefe"},
+      {label:"Violett",color:"#7040C0",mood:"Luxus, Mysterium, Kreativit\u00e4t"},
+    ],
+    valueTitle:"Helligkeit (Tonwert)",hue:"Farbton",
+    shade:"\u2190 dunkler (Schatten)",tint:"heller (Aufhellung) \u2192",
+    satTitle:"S\u00e4ttigung",satLow:"0% (grau)",satHigh:"100% (kr\u00e4ftig)",
+    mixTitle:"Subtraktive Farbmischung (Pigment)",
+    colorA:"Farbe A",colorB:"Farbe B",mixOut:"Mischung",
+    primaryTitle:"Grundfarben \u2014 zwei Modelle",
+    rybTitle:"RGnB (Malerei)",rybDesc:"Traditionelles K\u00fcnstlermodell. Rot, Gelb, Blau als Prim\u00e4rfarben.",
+    rgbTitle:"RGB (Licht)",rgbDesc:"Additives Modell f\u00fcr Bildschirme. Rot, Gr\u00fcn, Blau als Prim\u00e4rfarben.",
+  }
+};
+
+const panelIds=['wheel','harmony','temperature','value','mixing'];
+let currentLang='en';
+let currentPanel='wheel';
+let wheelClicked=false;
+
+function t(){return LANGS[currentLang];}
+
+function hueToName(h){return t().hues[Math.round(h/30)%12].name;}
+
+function hueToRgb(h,s,l){
+  s/=100;l/=100;
+  const a=s*Math.min(l,1-l);
+  const f=n=>{const k=(n+h/30)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));};
+  return[Math.round(f(0)*255),Math.round(f(8)*255),Math.round(f(4)*255)];
+}
+
+function drawWheel(){
+  const svg=document.getElementById('wheel-svg');
+  let html='';
+  for(let i=0;i<72;i++){
+    const a1=(i/72)*360-90,a2=((i+1)/72)*360-90;
+    const hue=(i/72)*360;
+    const cx=140,cy=140,r=125,inner=65;
+    const p=(a,rad)=>{const r2=a*Math.PI/180;return[cx+rad*Math.cos(r2),cy+rad*Math.sin(r2)];};
+    const[x1,y1]=p(a1,r),[x2,y2]=p(a2,r),[x3,y3]=p(a2,inner),[x4,y4]=p(a1,inner);
+    const d=`M${x1},${y1} A${r},${r} 0 0,1 ${x2},${y2} L${x3},${y3} A${inner},${inner} 0 0,0 ${x4},${y4} Z`;
+    html+=`<path d="${d}" fill="hsl(${hue},80%,55%)" stroke="none" style="cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity='.75'" onmouseleave="this.style.opacity='1'" onclick="onWheelClick(${Math.round(hue)})"/>`;
+  }
+  svg.innerHTML=html;
+}
+
+function onWheelClick(hue){
+  wheelClicked=true;
+  const idx=Math.round(hue/30)%12;
+  const info=t().hues[idx];
+  const center=document.getElementById('wheel-center');
+  center.style.background=`hsl(${hue},70%,55%)`;
+  center.style.color=`hsl(${hue},30%,20%)`;
+  center.style.fontSize='11px';
+  center.innerHTML=info.name;
+  document.getElementById('wheel-info').innerHTML=`<strong>${info.name}</strong> \u2014 ${info.desc}`;
+}
+
+function buildTabs(){
+  const bar=document.getElementById('tab-bar');
+  bar.innerHTML='';
+  t().tabs.forEach((label,i)=>{
+    const btn=document.createElement('button');
+    btn.className='tab'+(panelIds[i]===currentPanel?' active':'');
+    btn.textContent=label;
+    btn.onclick=()=>showPanel(panelIds[i]);
+    bar.appendChild(btn);
+  });
+}
+
+function buildHarmonies(){
+  const grid=document.getElementById('harmony-grid');
+  grid.innerHTML='';
+  const harmonyHues=[[0,180],[200,220,240],[0,120,240],[0,150,210],[0,90,180,270],[220]];
+  const harSats=[[null,null],[null,null,null],[null,null,null],[null,null,null],[null,null,null,null],[100,70,40,20]];
+  t().harmonies.forEach((h,i)=>{
+    const swatches=harmonyHues[i].map((hue,j)=>{
+      const sat=harSats[i][j]||70;
+      const lit=harSats[i][j]?[60,50,55,65][j]:55;
+      return`<div class="hswatch" style="background:hsl(${hue},${sat}%,${lit}%)"></div>`;
+    }).join('');
+    const card=document.createElement('div');
+    card.className='harmony-card';
+    card.innerHTML=`<h4>${h.name}</h4><p>${h.desc}</p><div class="harmony-swatches">${swatches}</div>`;
+    card.onclick=()=>{
+      document.querySelectorAll('.harmony-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      document.getElementById('harmony-info').innerHTML=`<strong>${h.name}</strong> \u2014 ${t().harmonies[i].use}`;
+    };
+    grid.appendChild(card);
+  });
+}
+
+function buildTempAssoc(){
+  const wrap=document.getElementById('temp-associations');
+  wrap.innerHTML='';
+  t().assoc.forEach(a=>{
+    const row=document.createElement('div');
+    row.className='assoc-row';
+    row.innerHTML=`<div class="assoc-dot" style="background:${a.color}"></div><div><span class="assoc-name">${a.label}</span><span class="assoc-mood">${a.mood}</span></div>`;
+    wrap.appendChild(row);
+  });
+}
+
+function updateValue(){
+  const h=parseInt(document.getElementById('val-hue').value);
+  document.getElementById('val-hue-out').textContent=h+'\u00b0';
+  const wrap=document.getElementById('value-bars');
+  const lights=[15,25,35,45,55,65,75,85];
+  const labels=['10','20','30','40','50','60','70','80'];
+  wrap.innerHTML=lights.map((l,i)=>{
+    const barH=30+(i/(lights.length-1))*90;
+    return`<div style="display:flex;flex-direction:column;align-items:center;flex:1"><div style="background:hsl(${h},65%,${l}%);width:100%;height:${barH}px;border-radius:4px 4px 0 0"></div><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:3px">${labels[i]}%</div></div>`;
+  }).join('');
+}
+
+function updateSat(){
+  const h=parseInt(document.getElementById('sat-hue').value);
+  document.getElementById('sat-hue-out').textContent=h+'\u00b0';
+  const wrap=document.getElementById('sat-bars');
+  const sats=[0,15,30,45,60,75,90,100];
+  wrap.innerHTML=sats.map(s=>`<div style="display:flex;flex-direction:column;align-items:center;flex:1"><div style="background:hsl(${h},${s}%,52%);width:100%;height:80px;border-radius:4px 4px 0 0"></div><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:3px">${s}%</div></div>`).join('');
+}
+
+function updateMix(){
+  const ha=parseInt(document.getElementById('mix-a').value);
+  const hb=parseInt(document.getElementById('mix-b').value);
+  const[r1,g1,b1]=hueToRgb(ha,75,52);
+  const[r2,g2,b2]=hueToRgb(hb,75,52);
+  const rm=(r1+r2)>>1,gm=(g1+g2)>>1,bm=(b1+b2)>>1;
+  document.getElementById('mix-dot-a').style.background=`hsl(${ha},75%,52%)`;
+  document.getElementById('mix-dot-b').style.background=`hsl(${hb},75%,52%)`;
+  document.getElementById('mix-dot-out').style.background=`rgb(${rm},${gm},${bm})`;
+  document.getElementById('mix-name-a').textContent=hueToName(ha);
+  document.getElementById('mix-name-b').textContent=hueToName(hb);
+  document.getElementById('mix-name-out').textContent=t().mixOut;
+}
+
+function showPanel(name){
+  currentPanel=name;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  buildTabs();
+}
+
+function applyLang(){
+  const L=t();
+  document.getElementById('main-heading').textContent=L.heading;
+  document.getElementById('lang-label').textContent=L.langLabel;
+  document.getElementById('lbl-wheel-title').textContent=L.wheelTitle;
+  if(!wheelClicked){
+    document.getElementById('wheel-center').innerHTML=L.wheelClick.replace('\n','<br>');
+    document.getElementById('wheel-info').textContent=L.wheelDefault;
+  }
+  document.getElementById('lbl-harmony-title').textContent=L.harmonyTitle;
+  document.getElementById('harmony-info').textContent=L.harmonyDefault;
+  document.getElementById('lbl-temp-title').textContent=L.tempTitle;
+  document.getElementById('temp-warm-h').textContent=L.tempWarmH;
+  document.getElementById('temp-warm-p').textContent=L.tempWarmP;
+  document.getElementById('temp-cool-h').textContent=L.tempCoolH;
+  document.getElementById('temp-cool-p').textContent=L.tempCoolP;
+  document.getElementById('lbl-temp-assoc').textContent=L.tempAssocTitle;
+  document.getElementById('temp-note').textContent=L.tempNote;
+  document.getElementById('lbl-value-title').textContent=L.valueTitle;
+  document.getElementById('lbl-hue').textContent=L.hue;
+  document.getElementById('lbl-hue2').textContent=L.hue;
+  document.getElementById('lbl-shade').textContent=L.shade;
+  document.getElementById('lbl-tint').textContent=L.tint;
+  document.getElementById('lbl-sat-title').textContent=L.satTitle;
+  document.getElementById('lbl-sat-low').textContent=L.satLow;
+  document.getElementById('lbl-sat-high').textContent=L.satHigh;
+  document.getElementById('lbl-mix-title').textContent=L.mixTitle;
+  document.getElementById('lbl-color-a').textContent=L.colorA;
+  document.getElementById('lbl-color-b').textContent=L.colorB;
+  document.getElementById('lbl-primary-title').textContent=L.primaryTitle;
+  document.getElementById('ryb-title').textContent=L.rybTitle;
+  document.getElementById('ryb-desc').textContent=L.rybDesc;
+  document.getElementById('rgb-title').textContent=L.rgbTitle;
+  document.getElementById('rgb-desc').textContent=L.rgbDesc;
+  buildTabs();
+  buildHarmonies();
+  buildTempAssoc();
+  updateMix();
+}
+
+function setLang(lang){
+  currentLang=lang;
+  applyLang();
+}
+
+drawWheel();
+applyLang();
+updateValue();
+updateSat();
+updateMix();
+</script>
